@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.edu.ifpr.cars.domain.Driver;
 import br.edu.ifpr.cars.domain.DriverRepository;
+import br.edu.ifpr.cars.domain.Passenger;
 import br.edu.ifpr.cars.domain.PassengerRepository;
 import br.edu.ifpr.cars.domain.TravelRequest;
 import br.edu.ifpr.cars.domain.TravelRequestRepository;
@@ -50,8 +51,14 @@ public class TravelRequestController {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/travels")
-    public TravelRequest createTravel(@RequestBody TravelRequest travelRequest) {
+    @PostMapping("/travels/{passengerId}")
+    public TravelRequest createTravel(@RequestBody TravelRequest travelRequest,
+            @PathVariable("passengerId") Long passengerId) {
+
+        Passenger passenger = passengerRepository.findById(passengerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        travelRequest.setPassenger(passenger);
         return travelRequestRepository.save(travelRequest);
     }
 
@@ -76,7 +83,6 @@ public class TravelRequestController {
         return travelRequestRepository.save(travel);
     }
 
-   
     @PatchMapping("/travels/{id}")
     public TravelRequest updateTravelStatus(@PathVariable("id") Long id,
             @RequestBody TravelRequest travelRequest) {
@@ -85,6 +91,7 @@ public class TravelRequestController {
                 .orElse(foundTravel.getStatus()));
         return travelRequestRepository.save(foundTravel);
     }
+
     @DeleteMapping("/travels/{id}")
     public void deleteTravel(@PathVariable("id") Long id) {
         travelRequestRepository.deleteById(id);
