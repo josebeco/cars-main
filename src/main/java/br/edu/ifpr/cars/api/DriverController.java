@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import br.edu.ifpr.cars.domain.Driver;
 import br.edu.ifpr.cars.domain.DriverRepository;
+import jakarta.validation.Valid;
 
 @Service
 @RestController
@@ -42,7 +43,7 @@ public class DriverController {
     }
 
     @PostMapping("/drivers")
-    public Driver createDriver(@RequestBody Driver driver) {
+    public Driver createDriver(@RequestBody @Valid Driver driver) {
         return driverRepository.save(driver);
     }
 
@@ -51,29 +52,50 @@ public class DriverController {
     public Driver fullUpdateDriver(@PathVariable("id") Long id,
             @RequestBody Driver driver) {
         Driver foundDriver = findDriver(id);
+        
         foundDriver.setName(driver.getName());
         foundDriver.setBirthDate(driver.getBirthDate());
+        foundDriver.setNumero(driver.getNumero());
+        foundDriver.setPlaca(driver.getPlaca());
+        foundDriver.setCnh(driver.getCnh());
+        foundDriver.setAnoCarro(driver.getAnoCarro());
+        foundDriver.setComentario(driver.getComentario());
+
         return driverRepository.save(foundDriver);
     }
 
     @PatchMapping("/drivers/{id}")
     public Driver incrementalUpdateDriver(@PathVariable("id") Long id,
-            @RequestBody Driver driver){
-            Driver foundDriver = findDriver(id);
-            
-            foundDriver.setName(Optional.ofNullable(driver.getName())
-            .orElse(foundDriver.getName()));
+            @RequestBody Driver driver) {
+        Driver foundDriver = findDriver(id);
 
-            foundDriver.setBirthDate(Optional.ofNullable(driver.getBirthDate())
-            .orElse(foundDriver.getBirthDate()));
+        foundDriver.setName(Optional.ofNullable(driver.getName())
+                .orElse(foundDriver.getName()));
 
-            return driverRepository.save(foundDriver);
+        foundDriver.setBirthDate(Optional.ofNullable(driver.getBirthDate())
+                .orElse(foundDriver.getBirthDate()));
+
+        foundDriver.setNumero(Optional.ofNullable(driver.getNumero())
+                .orElse(foundDriver.getNumero()));
+
+        foundDriver.setPlaca(Optional.ofNullable(driver.getPlaca())
+                .orElse(foundDriver.getPlaca()));
+
+        foundDriver.setCnh(Optional.ofNullable(driver.getCnh())
+                .orElse(foundDriver.getCnh()));
+
+        foundDriver.setAnoCarro(Optional.ofNullable(driver.getAnoCarro())
+                .orElse(foundDriver.getAnoCarro()));
+
+        foundDriver.setComentario(Optional.ofNullable(driver.getComentario())
+                .orElse(foundDriver.getComentario()));
+
+        return driverRepository.save(foundDriver);
     }
 
     @DeleteMapping("/drivers/{id}")
-    public void deleteDriver(@PathVariable("id") Long id){
+    public void deleteDriver(@PathVariable("id") Long id) {
         driverRepository.deleteById(id);
     }
-
 
 }
